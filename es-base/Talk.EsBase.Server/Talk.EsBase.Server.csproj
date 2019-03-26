@@ -23,4 +23,13 @@
     <ProjectReference Include="..\..\..\..\..\github\prometheus-net\Prometheus.NetStandard\Prometheus.NetStandard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Prometheus.AspNetCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
+      <HintPath>..\..\prometheus-net\Prometheus.AspNetCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Prometheus.NetStandard, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
+      <HintPath>..\..\prometheus-net\Prometheus.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
