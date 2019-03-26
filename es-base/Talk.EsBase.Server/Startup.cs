@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,13 +8,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Prometheus;
 using Raven.Client.Documents.Session;
-using Talk.EsBase.EventSourcing;
+using Talk.EventSourcing;
 using Talk.EsBase.Server.Infrastructure.EventStore;
+using Talk.EsBase.Server.Infrastructure.Prometheus;
 using Talk.EsBase.Server.Infrastructure.RavenDb;
-using Talk.EsBase.Server.Services;
+using Talk.EsBase.Server.Modules.Projections;
+using Talk.EsBase.Server.Modules.Sensors;
 using static Talk.EsBase.Server.Infrastructure.EventStore.EventStoreConfiguration;
 using static Talk.EsBase.Server.Infrastructure.Logging.Logger;
 using static Talk.EsBase.Server.Infrastructure.RavenDb.RavenDbConfiguration;
+using EventHandler = Talk.EventSourcing.EventHandler;
 
 namespace Talk.EsBase.Server
 {
@@ -38,6 +42,7 @@ namespace Talk.EsBase.Server
         public void ConfigureServices(IServiceCollection services)
         {
             UseLoggerFactory(LoggerFactory);
+            PrometheusMetrics.TryConfigure(Environment.ApplicationName);
 
             var esConnection = ConfigureEsConnection(
                 Configuration["EventStore:ConnectionString"],
@@ -46,13 +51,15 @@ namespace Talk.EsBase.Server
                 Configuration["RavenDb:Server"],
                 Configuration["RavenDb:Database"]
             );
-            var ravenDbProjectionManager = new ProjectionManager(
+            var ravenDbProjectionManager = new SubscriptionManager(
                 esConnection,
                 new RavenDbCheckpointStore(GetSession, "readmodels"),
+                "ravenDbSubscription",
                 ConfigureRavenDbProjections(GetSession)
             );
 
             services.AddSingleton(c => (Func<IAsyncDocumentSession>) GetSession);
+            services.AddSingleton<IAggregateStore>(new AggregateStore(esConnection));
             services.AddSingleton<IHostedService>(
                 new EventStoreService(
                     esConnection,
@@ -75,12 +82,15 @@ namespace Talk.EsBase.Server
             app.UseMetricServer();
             app.UseHttpMetrics();
 
-            app.UseRouting(routes => { routes.MapGrpcService<EventProcessorService>(); });
+            app.UseRouting(routes => { routes.MapGrpcService<SensorService>(); });
         }
 
-        static IProjection[] ConfigureRavenDbProjections(
+        static EventHandler[] ConfigureRavenDbProjections(
             Func<IAsyncDocumentSession> getSession)
-            => new IProjection[]
-                { };
+            => new EventHandler[]
+            {
+                new RavenDbProjection<ReadModels.VehicleItem>(
+                    getSession, VehicleItemProjection.GetHandler).Project,
+            };
     }
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.EventSourcing;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents.Session;
-using Talk.EsBase.EventSourcing;
+using Talk.EventSourcing;
 using Talk.EsBase.Server.Infrastructure.Logging;
 
 namespace Talk.EsBase.Server.Infrastructure.RavenDb
 {
-    public class RavenDbProjection<T> : IProjection
+    public class RavenDbProjection<T>
     {
         static readonly string ReadModelName = typeof(T).Name;
 

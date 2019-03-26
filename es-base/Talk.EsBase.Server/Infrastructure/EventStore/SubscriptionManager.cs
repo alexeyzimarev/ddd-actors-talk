@@ -3,28 +3,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Logging;
-using Talk.EsBase.EventSourcing;
+using Talk.EsBase.Server.Infrastructure.Prometheus;
+using EventHandler = Talk.EventSourcing.EventHandler;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Talk.EsBase.Server.Infrastructure.EventStore
 {
-    public class ProjectionManager
+    public class SubscriptionManager
     {
         readonly ILogger _log;
 
         readonly ICheckpointStore _checkpointStore;
+        readonly string _subscriptionName;
         readonly IEventStoreConnection _connection;
-        readonly IProjection[] _projections;
+        readonly EventHandler[] _eventHandlers;
         EventStoreAllCatchUpSubscription _subscription;
 
-        public ProjectionManager(
+        public SubscriptionManager(
             IEventStoreConnection connection,
             ICheckpointStore checkpointStore,
-            params IProjection[] projections)
+            string subscriptionName,
+            params EventHandler[] eventHandlers)
         {
             _connection = connection;
             _checkpointStore = checkpointStore;
-            _projections = projections;
+            _subscriptionName = subscriptionName;
+            _eventHandlers = eventHandlers;
+            _log = Logging.Logger.ForContext<SubscriptionManager>();
         }
 
         public async Task Start()
@@ -35,7 +40,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
                 false
             );
 
-            _log.LogDebug("Starting the projection manager...");
+            _log.LogDebug("Starting the subscription manager...");
 
             var position = await _checkpointStore.GetCheckpoint();
             _log.LogDebug("Retrieved the checkpoint: {checkpoint}", position);
@@ -55,15 +60,23 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
 
             var @event = resolvedEvent.Deserialze();
 
-            _log.LogDebug("Projecting event {event}", @event.ToString());
+            _log.LogDebug("Processing event {event}", @event.ToString());
 
             try
             {
-                await Task.WhenAll(_projections.Select(x => x.Project(@event)));
+                await PrometheusMetrics.Measure(async () =>
+                {
+                    await Task.WhenAll(_eventHandlers.Select(x => x(@event)));
 
-                await _checkpointStore.StoreCheckpoint(
-                    resolvedEvent.OriginalPosition.Value
-                );
+                    await _checkpointStore.StoreCheckpoint(
+                        resolvedEvent.OriginalPosition.Value
+                    );
+                }, PrometheusMetrics.SubscriptionTimer(_subscriptionName));
+
+                PrometheusMetrics.ObserveLeadTime(
+                    resolvedEvent.Event.EventType,
+                    resolvedEvent.Event.Created,
+                    _subscriptionName);
             }
             catch (Exception e)
             {

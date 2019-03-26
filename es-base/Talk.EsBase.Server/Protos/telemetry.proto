@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package Processor;
+package Telemetry;
 
-service EventReceiver {
-  rpc ReceiveEvent (Telemetry) returns (Ack) {}
+service TelemetryProcessor {
+  rpc Receive (SensorTelemetry) returns (Ack) {}
 }
 
-message Telemetry {
+message SensorTelemetry {
   string deviceId = 1;
   int32 speed = 2;
   int32 temperature = 3;

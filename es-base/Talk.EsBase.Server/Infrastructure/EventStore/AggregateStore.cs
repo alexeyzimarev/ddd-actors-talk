@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.EventSourcing;
+using Talk.EventSourcing;
 
 namespace Talk.EsBase.Server.Infrastructure.EventStore
 {
-    public class AggregateStore
+    public class AggregateStore : IAggregateStore
     {
         readonly IEventStoreConnection _connection;
 

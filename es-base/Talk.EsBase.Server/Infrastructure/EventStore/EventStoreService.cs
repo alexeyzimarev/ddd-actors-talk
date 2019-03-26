@@ -9,14 +9,14 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
     public class EventStoreService : IHostedService
     {
         readonly IEventStoreConnection _esConnection;
-        readonly ProjectionManager[] _projectionManager;
+        readonly SubscriptionManager[] _subscriptionManager;
 
         public EventStoreService(
             IEventStoreConnection esConnection,
-            params ProjectionManager[] projectionManagers)
+            params SubscriptionManager[] subscriptionManagers)
         {
             _esConnection = esConnection;
-            _projectionManager = projectionManagers;
+            _subscriptionManager = subscriptionManagers;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
             await _esConnection.ConnectAsync();
 
             await Task.WhenAll(
-                _projectionManager
+                _subscriptionManager
                     .Select(projection => projection.Start())
             );
         }
