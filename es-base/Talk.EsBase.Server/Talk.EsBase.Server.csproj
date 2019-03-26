@@ -14,6 +14,13 @@
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
 
     <PackageReference Include="Grpc.Tools" Version="1.19.0-pre1" PrivateAssets="All" />
+
+<!--    <PackageReference Include="prometheus-net.AspNetCore" Version="3.0.3" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\github\prometheus-net\Prometheus.AspNetCore\Prometheus.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\..\..\github\prometheus-net\Prometheus.NetStandard\Prometheus.NetStandard.csproj" />
   </ItemGroup>
 
 </Project>

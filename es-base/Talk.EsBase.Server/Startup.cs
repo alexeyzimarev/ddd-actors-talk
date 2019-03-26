@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
 using Talk.EsBase.Server.Services;
 
 namespace Talk.EsBase.Server
@@ -22,6 +23,9 @@ namespace Talk.EsBase.Server
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMetricServer();
+            app.UseHttpMetrics();
 
             app.UseRouting(routes => { routes.MapGrpcService<EventProcessorService>(); });
         }
