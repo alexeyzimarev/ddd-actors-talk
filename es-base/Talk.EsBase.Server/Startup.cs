@@ -1,4 +1,6 @@
 ﻿using System;
+using MassTransit;
+using MassTransit.AspNetCoreIntegration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,22 +9,25 @@ using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Raven.Client.Documents.Session;
 using Talk.EsBase.Server.Infrastructure.EventStore;
+using Talk.EsBase.Server.Infrastructure.MassTransit;
 using Talk.EsBase.Server.Infrastructure.Prometheus;
 using Talk.EsBase.Server.Infrastructure.RavenDb;
 using Talk.EsBase.Server.Modules.Customers;
 using Talk.EsBase.Server.Modules.Projections;
 using Talk.EsBase.Server.Modules.Sensors;
 using Talk.EsBase.Server.Modules.Vehicles;
+using Talk.Messages.Customer;
 using static Talk.EsBase.Server.Infrastructure.EventStore.EventStoreConfiguration;
 using static Talk.EsBase.Server.Infrastructure.RavenDb.RavenDbConfiguration;
 using EventHandler = Talk.EventSourcing.EventHandler;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Talk.EsBase.Server
 {
     public class Startup
     {
         public Startup(
-            IWebHostEnvironment environment,
+            IHostingEnvironment environment,
             IConfiguration configuration
         )
         {
@@ -30,7 +35,7 @@ namespace Talk.EsBase.Server
             Configuration = configuration;
         }
 
-        IWebHostEnvironment Environment { get; }
+        IHostingEnvironment Environment { get; }
         IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
@@ -61,18 +66,26 @@ namespace Talk.EsBase.Server
             );
             var store =
                 new MeasuredStore(
-                new AggregateStore(esConnection));
+                    new AggregateStore(esConnection));
 
-            services.AddSingleton(new CustomerCommandService(store));
+            var customerService = new CustomerCommandService(store);
+            services.AddSingleton(customerService);
             services.AddSingleton(new VehicleCommandService(store));
             services.AddSingleton(new SensorCommandService(store));
 
-            services.AddGrpc();
+            services.AddMassTransit(
+                MassTransitConfiguration.ConfigureBus(
+                    "rabbitmq://localhost", "guest", "guest",
+                    ("talk-telemetry", ep =>
+                        ep.Handler<Commands.RegisterCustomer>( ctx => customerService.Handle(ctx.Message)))
+//                    ("talk-customers", ep => { }),
+//                    ("talk-vehicles", ep => { }))
+            ));
 
             IAsyncDocumentSession GetSession() => documentStore.OpenAsyncSession();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -81,13 +94,6 @@ namespace Talk.EsBase.Server
 
             app.UseMetricServer();
             app.UseHttpMetrics();
-
-            app.UseRouting(routes =>
-            {
-                routes.MapGrpcService<SensorGrpcService>();
-                routes.MapGrpcService<VehicleGrpcService>();
-                routes.MapGrpcService<CustomerGrpcService>();
-            });
         }
 
         static EventHandler[] ConfigureRavenDbProjections(

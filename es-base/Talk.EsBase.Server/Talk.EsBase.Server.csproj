@@ -1,40 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\*.proto" GrpcServices="Server" />
+<!--    <Protobuf Include="Protos\*.proto" GrpcServices="Server" />-->
 <!--    <Content Include="@(Protobuf)" LinkBase="" />-->
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="EventStore.Client" Version="5.0.1" />
-    <PackageReference Include="Grpc.AspNetCore.Server" Version="0.1.19-pre1" />
     <PackageReference Include="Google.Protobuf" Version="3.6.1" />
     <PackageReference Include="Grpc.Tools" Version="1.19.0-pre1" PrivateAssets="All" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="5.3.2" />
+    <PackageReference Include="MassTransit.Prometheus" Version="0.2.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="5.3.2" />
     <PackageReference Include="RavenDB.Client" Version="4.1.4" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
-
-<!--    <PackageReference Include="prometheus-net.AspNetCore" Version="3.0.3" />-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Prometheus.AspNetCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
-      <HintPath>..\..\prometheus-net\Prometheus.AspNetCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Prometheus.NetStandard, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
-      <HintPath>..\..\prometheus-net\Prometheus.NetStandard.dll</HintPath>
-    </Reference>
+    <PackageReference Include="prometheus-net.AspNetCore" Version="3.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\shared\Talk.Domain\Talk.Domain.csproj" />
     <ProjectReference Include="..\..\shared\Talk.EventSourcing\Talk.EventSourcing.csproj" />
+    <ProjectReference Include="..\..\shared\Talk.Messages\Talk.Messages.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    <Content Update="appsettings.Development.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>

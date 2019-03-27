@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Talk.Domain.Vehicle;
 using Talk.EventSourcing;
-using VehiclesManagement;
 
 namespace Talk.EsBase.Server.Modules.Vehicles
 {
@@ -10,29 +9,29 @@ namespace Talk.EsBase.Server.Modules.Vehicles
         public VehicleCommandService(IAggregateStore store)
             : base(store) { }
 
-        public Task Handle(RegisterVehicle command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.Register(
-                    command.VehicleId,
-                    command.CustomerId,
-                    command.MakeModel,
-                    command.Registration,
-                    command.MaxSpeed,
-                    command.MaxTemperature
-                )
-            );
-
-        public Task Handle(AdjustMaximumSpeed command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.AdjustMaxSpeed(state, command.MaxSpeed)
-            );
-
-        public Task Handle(AdjustMaxTemperature command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.AdjustMaxTemperature(state, command.MaxTemperature)
-            );
+//        public Task Handle(RegisterVehicle command)
+//            => Handle(
+//                command.VehicleId,
+//                state => Vehicle.Register(
+//                    command.VehicleId,
+//                    command.CustomerId,
+//                    command.MakeModel,
+//                    command.Registration,
+//                    command.MaxSpeed,
+//                    command.MaxTemperature
+//                )
+//            );
+//
+//        public Task Handle(AdjustMaximumSpeed command)
+//            => Handle(
+//                command.VehicleId,
+//                state => Vehicle.AdjustMaxSpeed(state, command.MaxSpeed)
+//            );
+//
+//        public Task Handle(AdjustMaxTemperature command)
+//            => Handle(
+//                command.VehicleId,
+//                state => Vehicle.AdjustMaxTemperature(state, command.MaxTemperature)
+//            );
     }
 }

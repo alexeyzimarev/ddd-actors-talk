@@ -1,0 +1,86 @@
+version: '3.5'
+
+services:
+
+  eventstore:
+    container_name: talk-eventstore
+    image: eventstore/eventstore:latest
+    ports:
+    - 2113:2113
+    - 1113:1113
+    environment:
+    - EVENTSTORE_EXT_HTTP_PORT=2113
+    - EVENTSTORE_EXT_TCP_PORT=1113
+
+  seq:
+    container_name: talk-seq
+    image: datalust/seq:latest
+    ports:
+    - 5341:80
+    environment:
+    - ACCEPT_EULA=Y
+
+  consul:
+    container_name: talk-consul
+    image: consul:latest
+    ports:
+    - 8500:8500
+    environment:
+    - CONSUL_BIND_INTERFACE=eth0
+    - CONSUL_UI_BETA=true
+
+  rabbitmq:
+    container_name: talk-rabbitmq
+    image: rabbitmq:management
+    hostname: rabbitmq
+    ports:
+    - 5672:5672
+    - 25672:25672
+    - 15672:15672
+
+  ravendb:
+    container_name: talk-ravendb
+    image: ravendb/ravendb
+    ports:
+      - 8080:8080
+    environment:
+      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_ARGS="--Setup.Mode=None"
+
+  prometheus:
+    container_name: talk-prometheus
+    image: prom/prometheus
+    volumes:
+      - prometheus_data:/prometheus
+      - prometheus_config:/fragments/
+      - ${PWD}/config/targets/prometheus.json:/etc/prometheus/targets/prometheus.json
+      - ${PWD}/config/targets/grafana.json:/etc/prometheus/targets/grafana.json
+    command:
+      - '--config.file=/fragments/complete/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+     - 9090:9090 
+
+  grafana:
+    container_name: talk-grafana
+    image: grafana/grafana
+    ports:
+     - 3000:3000
+    volumes:
+      - grafana_lib:/var/lib/grafana
+      - ${PWD}/config/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+
+  config-concat:
+    container_name: talk_prom_config_concat
+    image: deanwilson/promconf-concat:0.1.0
+    volumes:
+      - prometheus_config:/fragments/
+      - ${PWD}/config/base_prometheus.yml:/base_prometheus.yml
+
+volumes:
+  grafana_lib: {}
+  prometheus_data: {}
+  prometheus_config:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
