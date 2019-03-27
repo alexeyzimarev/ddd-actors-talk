@@ -1,11 +1,13 @@
-using System;
 using Talk.EventSourcing;
+using static System.String;
 using static Talk.Domain.Vehicle.Events;
 
 namespace Talk.Domain.Vehicle
 {
     public class VehicleState : AggregateState<VehicleState>
     {
+        string CustomerId { get; set; }
+        string Registration { get; set; }
         string State { get; set; }
         int MaxSpeed { get; set; }
         int MaxTemperature { get; set; }
@@ -17,7 +19,9 @@ namespace Talk.Domain.Vehicle
                         With(state, x =>
                         {
                             x.Id = e.VehicleId;
+                            x.CustomerId = e.CustomerId;
                             x.State = "Just registered";
+                            x.Registration = e.Registration;
                             x.MaxSpeed = e.MaxSpeed;
                             x.MaxTemperature = e.MaxTemperature;
                         }),
@@ -31,7 +35,9 @@ namespace Talk.Domain.Vehicle
         protected override bool EnsureValidState(VehicleState newState)
             => newState switch
                 {
-                    VehicleState v when String.IsNullOrWhiteSpace(v.Id) => false,
+                    VehicleState v when IsNullOrWhiteSpace(v.Id) ||
+                                        IsNullOrWhiteSpace(v.CustomerId) ||
+                                        IsNullOrWhiteSpace(v.Registration) => false,
                     _ => true
                 };
     }

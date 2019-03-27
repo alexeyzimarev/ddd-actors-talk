@@ -23,9 +23,15 @@ namespace Talk.EsBase.Server.Modules.Projections
                                     VehicleId = GetDbId(e.VehicleId),
                                     Registration = e.Registration,
                                     MakeModel = e.MakeModel,
+                                    MaxSpeed = e.MaxSpeed,
+                                    MaxTemperature = e.MaxTemperature,
                                     State = e.State
                                 }
                             ),
+                    VehicleMaxSpeedAdjusted e =>
+                        () => Update(e.VehicleId, x => x.MaxSpeed = e.MaxSpeed),
+                    VehicleMaxTemperatureAdjusted e =>
+                        () => Update(e.VehicleId, x => x.MaxTemperature = e.MaxTemperature),
                         _ => (Func<Task>) null
                 };
 

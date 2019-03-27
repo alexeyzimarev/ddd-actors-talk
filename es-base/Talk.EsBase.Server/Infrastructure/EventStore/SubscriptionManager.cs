@@ -2,16 +2,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using Talk.EsBase.Server.Infrastructure.Prometheus;
 using EventHandler = Talk.EventSourcing.EventHandler;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+using ILogger = Serilog.ILogger;
 
 namespace Talk.EsBase.Server.Infrastructure.EventStore
 {
     public class SubscriptionManager
     {
-        readonly ILogger _log;
+        static readonly ILogger _log =Log.ForContext<SubscriptionManager>();
 
         readonly ICheckpointStore _checkpointStore;
         readonly string _subscriptionName;
@@ -29,27 +30,26 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
             _checkpointStore = checkpointStore;
             _subscriptionName = subscriptionName;
             _eventHandlers = eventHandlers;
-            _log = Logging.Logger.ForContext<SubscriptionManager>();
         }
 
         public async Task Start()
         {
             var settings = new CatchUpSubscriptionSettings(
                 2000, 500,
-                _log.IsEnabled(LogLevel.Debug),
+                _log.IsEnabled(LogEventLevel.Debug),
                 false
             );
 
-            _log.LogDebug("Starting the subscription manager...");
+            _log.Debug("Starting the subscription manager...");
 
             var position = await _checkpointStore.GetCheckpoint();
-            _log.LogDebug("Retrieved the checkpoint: {checkpoint}", position);
+            _log.Debug("Retrieved the checkpoint: {checkpoint}", position);
 
             _subscription = _connection.SubscribeToAllFrom(position,
                 settings, EventAppeared
             );
 
-            _log.LogDebug("Subscribed to $all stream");
+            _log.Debug("Subscribed to $all stream");
         }
 
         async Task EventAppeared(
@@ -60,7 +60,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
 
             var @event = resolvedEvent.Deserialze();
 
-            _log.LogDebug("Processing event {event}", @event.ToString());
+            _log.Debug("Processing event {event}", @event.ToString());
 
             try
             {
@@ -80,7 +80,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
             }
             catch (Exception e)
             {
-                _log.LogError(
+                _log.Error(
                     e,
                     "Error occured when projecting the event {event}",
                     @event

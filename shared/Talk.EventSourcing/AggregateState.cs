@@ -25,7 +25,7 @@ namespace Talk.EventSourcing
 
         public string StreamName => GetStreamName(Id);
 
-        public long Version { get; protected set; }
+        public long Version { get; protected set; } = -1;
 
         public string Id { get; protected set; }
 

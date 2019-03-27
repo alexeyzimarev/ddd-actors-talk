@@ -13,6 +13,12 @@ namespace Talk.EsBase.Server.Infrastructure.Prometheus
         public static IHistogram SubscriptionTimer(string subscriptionName)
             => _subscriptionTimer.Labels(_appName, subscriptionName);
 
+        public static IHistogram PersistenceTimer(string operation)
+            => _persistenceTimer.Labels(_appName, operation);
+
+        public static ICounter PersistenceErrorCounter(string operation)
+            => _persistenceErrorCounter.Labels(_appName, operation);
+
         internal static void TryConfigure(string appName)
         {
             if (_isConfigured) return;
@@ -39,6 +45,20 @@ namespace Talk.EsBase.Server.Infrastructure.Prometheus
                     Buckets = bounds,
                     LabelNames = new[] {"appname", "subscription_name"}
                 });
+
+            _persistenceTimer = Metrics.CreateHistogram(
+                "app_event_persistence_time_seconds",
+                "The time to load or save an aggregate, in seconds.",
+                new HistogramConfiguration
+                {
+                    Buckets = bounds,
+                    LabelNames = new[] {"appname", "operation"}
+                });
+
+            _persistenceErrorCounter = Metrics.CreateCounter(
+                "app_persistence_errors_count",
+                "The number of persistence failures.",
+                "appname", "operation");
 
             _isConfigured = true;
         }
@@ -70,10 +90,36 @@ namespace Talk.EsBase.Server.Infrastructure.Prometheus
             }
         }
 
+       public static async Task<T> Measure<T>(Func<Task<T>> action, IHistogram metric, ICounter errorCounter = null)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            T result;
+
+            try
+            {
+                result = await action();
+            }
+            catch (Exception)
+            {
+                errorCounter?.Inc();
+                throw;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                metric.Observe(stopwatch.ElapsedTicks / (double) Stopwatch.Frequency);
+            }
+
+            return result;
+        }
 
         static bool _isConfigured;
         static string _appName;
         static Histogram _leadTimer;
         static Histogram _subscriptionTimer;
+        static Histogram _persistenceTimer;
+        static Counter _persistenceErrorCounter;
     }
 }

@@ -5,6 +5,7 @@ namespace Talk.Domain.Vehicle
         public class VehicleRegistered
         {
             public string VehicleId { get; set; }
+            public string CustomerId { get; set; }
             public string MakeModel { get; set; }
             public string Registration { get; set; }
             public int MaxSpeed { get; set; }

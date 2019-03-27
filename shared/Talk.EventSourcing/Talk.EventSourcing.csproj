@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="DeepCloner" Version="0.10.2" />
+      <PackageReference Include="Serilog" Version="2.8.0" />
     </ItemGroup>
 
 </Project>

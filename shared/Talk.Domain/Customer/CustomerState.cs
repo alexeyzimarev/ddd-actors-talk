@@ -13,8 +13,8 @@ namespace Talk.Domain.Customer
                     Events.CustomerRegistered e =>
                         With(state, x =>
                         {
-                            Id = e.CustomerId;
-                            DisplayName = e.DisplayName;
+                            x.Id = e.CustomerId;
+                            x.DisplayName = e.DisplayName;
                         }),
                     _ => state
                 };

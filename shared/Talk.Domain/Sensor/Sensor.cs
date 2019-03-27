@@ -5,8 +5,8 @@ namespace Talk.Domain.Sensor
         public static SensorState.Result Install(
             string sensorId,
             string vehicleId
-        )
-            => new SensorState()
+        ) =>
+            new SensorState()
                 .Apply(new Events.SensorInstalled
                 {
                     SensorId = sensorId,
@@ -17,8 +17,8 @@ namespace Talk.Domain.Sensor
             SensorState state,
             int speed,
             int temperature
-        )
-            => state.Apply(new Events.TelemetryReceived
+        ) =>
+            state.Apply(new Events.TelemetryReceived
             {
                 SensorId = state.Id,
                 Speed = speed,

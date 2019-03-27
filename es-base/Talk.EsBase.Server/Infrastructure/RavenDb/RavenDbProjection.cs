@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Raven.Client.Documents.Session;
-using Talk.EventSourcing;
-using Talk.EsBase.Server.Infrastructure.Logging;
+using Serilog;
 
 namespace Talk.EsBase.Server.Infrastructure.RavenDb
 {
@@ -17,7 +15,7 @@ namespace Talk.EsBase.Server.Infrastructure.RavenDb
         {
             _projector = projector;
             GetSession = getSession;
-            _log = Logger.ForContext(GetType());
+            _log = Log.ForContext(GetType());
         }
 
         Func<IAsyncDocumentSession> GetSession { get; }
@@ -32,7 +30,7 @@ namespace Talk.EsBase.Server.Infrastructure.RavenDb
 
                 if (handler != null)
                 {
-                    _log.LogDebug(
+                    _log.Debug(
                         "Projecting {event} to {model}",
                         @event,
                         ReadModelName

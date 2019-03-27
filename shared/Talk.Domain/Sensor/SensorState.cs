@@ -1,5 +1,5 @@
-using System;
 using Talk.EventSourcing;
+using static System.String;
 using static Talk.Domain.Sensor.Events;
 
 namespace Talk.Domain.Sensor
@@ -29,7 +29,7 @@ namespace Talk.Domain.Sensor
                 };
 
         protected override bool EnsureValidState(SensorState newState)
-            => !String.IsNullOrWhiteSpace(newState.Id)
-               && !String.IsNullOrWhiteSpace(newState.VehicleId);
+            => !IsNullOrWhiteSpace(newState.Id)
+               && !IsNullOrWhiteSpace(newState.VehicleId);
     }
 }

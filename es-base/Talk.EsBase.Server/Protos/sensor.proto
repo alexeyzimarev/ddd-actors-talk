@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package SensorsHandling;
+
+service SensorService {
+  rpc Install (SensorInstallation) returns (Ack) {}
+  rpc ReceiveTelemetry (SensorTelemetry) returns (Ack) {}
+}
+
+message SensorInstallation {
+  string sensorId = 1;
+  string vehicleId = 2;
+}
+
+message SensorTelemetry {
+  string sensorId = 1;
+  int32 speed = 2;
+  int32 temperature = 3;
+}
+
+message Ack {
+  string message = 1;
+}
