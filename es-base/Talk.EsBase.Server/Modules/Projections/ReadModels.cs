@@ -1,5 +1,3 @@
-using System;
-
 namespace Talk.EsBase.Server.Modules.Projections
 {
     public static class ReadModels
@@ -11,7 +9,7 @@ namespace Talk.EsBase.Server.Modules.Projections
             public string Registration { get; set; }
             public string State { get; set; }
 
-            public static string GetDatabaseId(Guid id)
+            public static string GetDatabaseId(string id)
                 => $"VehicleItem/{id}";
         }
     }

@@ -23,7 +23,6 @@ namespace Talk.EsBase.Server
 {
     public class Startup
     {
-
         public Startup(
             ILoggerFactory loggerFactory,
             IWebHostEnvironment environment,

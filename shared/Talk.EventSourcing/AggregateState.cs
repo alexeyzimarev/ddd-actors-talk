@@ -9,7 +9,7 @@ namespace Talk.EventSourcing
     {
         T When(T state, object @event);
 
-        string GetStreamName(Guid id);
+        string GetStreamName(string id);
 
         string StreamName { get; }
 
@@ -21,13 +21,13 @@ namespace Talk.EventSourcing
     {
         public abstract T When(T state, object @event);
 
-        public string GetStreamName(Guid id) => $"{typeof(T).Name}-{id:N}";
+        public string GetStreamName(string id) => $"{typeof(T).Name}-{id}";
 
         public string StreamName => GetStreamName(Id);
 
         public long Version { get; protected set; }
 
-        public Guid Id { get; protected set; }
+        public string Id { get; protected set; }
 
         protected T With(T state, Action<T> update)
         {

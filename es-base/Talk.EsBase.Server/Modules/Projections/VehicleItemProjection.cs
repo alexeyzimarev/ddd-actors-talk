@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Raven.Client.Documents.Session;
 using Talk.EsBase.Server.Infrastructure.RavenDb;
-using static Talk.Domain.VehicleEvents;
+using static Talk.Domain.Vehicle.Events;
 using static Talk.EsBase.Server.Modules.Projections.ReadModels;
 
 namespace Talk.EsBase.Server.Modules.Projections
@@ -30,14 +30,14 @@ namespace Talk.EsBase.Server.Modules.Projections
                 };
 
             Task Update(
-                Guid id,
+                string id,
                 Action<VehicleItem> update)
                 => session.UpdateItem(
                     GetDbId(id),
                     update
                 );
 
-            string GetDbId(Guid vehicleId)
+            string GetDbId(string vehicleId)
                 => VehicleItem.GetDatabaseId(vehicleId);
         }
     }

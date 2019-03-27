@@ -21,7 +21,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
                 update.State.StreamName, version, update.Events.ToArray()
             );
 
-        public async Task<T> Load<T>(Guid id, Func<T, object, T> when)
+        public async Task<T> Load<T>(string id, Func<T, object, T> when)
             where T : IAggregateState<T>, new()
         {
             var state = new T();

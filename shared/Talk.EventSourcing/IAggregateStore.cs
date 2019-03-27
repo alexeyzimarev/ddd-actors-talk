@@ -10,7 +10,7 @@ namespace Talk.EventSourcing
             AggregateState<T>.Result update)
             where T : class, IAggregateState<T>, new();
 
-        Task<T> Load<T>(Guid id, Func<T, object, T> when)
+        Task<T> Load<T>(string id, Func<T, object, T> when)
             where T : IAggregateState<T>, new();
 
         Task<bool> Exists(string streamName);
