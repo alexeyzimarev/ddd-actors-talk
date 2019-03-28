@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Grpc.Core;
 using Talk.Client.Seeds;
 
 namespace Talk.Client
@@ -13,17 +12,12 @@ namespace Talk.Client
         {
             SetupThreadPool();
 
-            // Include port of the gRPC server as an application argument
-//            var port = args.Length > 0 ? args[0] : "50051";
-
-//            var channel = new Channel("localhost:" + port, ChannelCredentials.Insecure);
-
             var bus = BusConfiguration.ConfigureMassTransit();
             await bus.StartAsync();
 
-            await CustomerSeed.Publish(bus);
+//            await CustomerSeed.Publish(bus);
 
-//            await channel.ShutdownAsync();
+            await VehicleSeed.Publish(bus);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();

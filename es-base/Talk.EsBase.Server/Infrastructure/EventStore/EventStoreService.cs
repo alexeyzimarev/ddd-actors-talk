@@ -3,12 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace Talk.EsBase.Server.Infrastructure.EventStore
 {
     public class EventStoreService : IHostedService
     {
         readonly IEventStoreConnection _esConnection;
+        readonly ConnectionSupervisor _supervisor;
         readonly SubscriptionManager[] _subscriptionManager;
 
         public EventStoreService(
@@ -17,10 +19,14 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
         {
             _esConnection = esConnection;
             _subscriptionManager = subscriptionManagers;
+            _supervisor = new ConnectionSupervisor(
+                esConnection,
+                () => Log.Fatal("Fatal failure with EventStore connection"));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _supervisor.Initialize();
             await _esConnection.ConnectAsync();
 
             await Task.WhenAll(
@@ -31,6 +37,7 @@ namespace Talk.EsBase.Server.Infrastructure.EventStore
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _supervisor.Shutdown();
             _esConnection.Close();
             return Task.CompletedTask;
         }

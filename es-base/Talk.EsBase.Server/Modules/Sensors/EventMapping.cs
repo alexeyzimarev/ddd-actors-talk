@@ -1,5 +1,6 @@
 using Talk.Domain.Sensor;
 using Talk.EsBase.Server.Infrastructure.EventStore;
+using Talk.Messages.Sensor;
 
 namespace Talk.EsBase.Server.Modules.Sensors
 {

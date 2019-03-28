@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Talk.Domain.Customer;
 using Talk.EventSourcing;
-using Talk.Messages.Customer;
 using static Talk.Messages.Customer.Commands;
 
 namespace Talk.EsBase.Server.Modules.Customers

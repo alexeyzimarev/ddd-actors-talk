@@ -1,14 +1,14 @@
-namespace Talk.Domain.Sensor
+namespace Talk.Messages.Sensor
 {
-    public static class Events
+    public static class Commands
     {
-        public class SensorInstalled
+        public class SensorInstallation
         {
             public string SensorId { get; set; }
             public string VehicleId { get; set; }
         }
 
-        public class TelemetryReceived
+        public class SensorTelemetry
         {
             public string SensorId { get; set; }
             public int Speed { get; set; }

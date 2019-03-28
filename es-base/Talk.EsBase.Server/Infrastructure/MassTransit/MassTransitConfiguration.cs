@@ -16,6 +16,7 @@ namespace Talk.EsBase.Server.Infrastructure.MassTransit
             => Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
 //                cfg.UsePrometheusMetrics();
+                cfg.UseMessageRetry(r => r.Immediate(10));
 
                 var host = cfg.Host(new Uri(hostUri), h =>
                 {

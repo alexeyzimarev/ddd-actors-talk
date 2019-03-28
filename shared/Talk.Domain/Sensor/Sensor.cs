@@ -1,3 +1,5 @@
+using Talk.Messages.Sensor;
+
 namespace Talk.Domain.Sensor
 {
     public static class Sensor

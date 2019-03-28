@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Talk.EventSourcing\Talk.EventSourcing.csproj" />
+      <ProjectReference Include="..\Talk.Messages\Talk.Messages.csproj" />
     </ItemGroup>
 
 </Project>

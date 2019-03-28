@@ -1,3 +1,5 @@
+using Talk.Messages.Customer;
+
 namespace Talk.Domain.Customer
 {
     public static class Customer

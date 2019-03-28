@@ -39,10 +39,11 @@ namespace Talk.EsBase.Server.Infrastructure.RavenDb
             Action<T> update)
         {
             var item = await session.LoadAsync<T>(id);
-
             if (item == null) return;
 
             update(item);
+
+            await session.SaveChangesAsync();
         }
 
         public static async Task UpdateMultipleItems<T>(
@@ -57,6 +58,8 @@ namespace Talk.EsBase.Server.Infrastructure.RavenDb
 
             foreach (var item in items)
                 update(item);
+
+            await session.SaveChangesAsync();
         }
 
     }

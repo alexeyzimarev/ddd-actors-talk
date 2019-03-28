@@ -1,6 +1,6 @@
 using Talk.EventSourcing;
 using static System.String;
-using static Talk.Domain.Sensor.Events;
+using static Talk.Messages.Sensor.Events;
 
 namespace Talk.Domain.Sensor
 {

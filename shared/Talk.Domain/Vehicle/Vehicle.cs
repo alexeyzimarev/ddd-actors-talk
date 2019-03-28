@@ -1,3 +1,5 @@
+using Talk.Messages.Vehicle;
+
 namespace Talk.Domain.Vehicle
 {
     public static class Vehicle

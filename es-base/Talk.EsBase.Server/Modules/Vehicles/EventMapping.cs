@@ -1,5 +1,6 @@
 using Talk.Domain.Vehicle;
 using Talk.EsBase.Server.Infrastructure.EventStore;
+using Talk.Messages.Vehicle;
 
 namespace Talk.EsBase.Server.Modules.Vehicles
 {

@@ -1,4 +1,4 @@
-namespace Talk.Domain.Customer
+namespace Talk.Messages.Customer
 {
     public static class Events
     {

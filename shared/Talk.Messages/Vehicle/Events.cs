@@ -1,4 +1,4 @@
-namespace Talk.Domain.Vehicle
+namespace Talk.Messages.Vehicle
 {
     public static class Events
     {

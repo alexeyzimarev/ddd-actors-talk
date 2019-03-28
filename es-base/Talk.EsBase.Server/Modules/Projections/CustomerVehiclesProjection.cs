@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Raven.Client.Documents.Session;
 using Talk.Domain.Customer;
 using Talk.EsBase.Server.Infrastructure.RavenDb;
+using Talk.Messages.Customer;
 using static Talk.EsBase.Server.Modules.Projections.ReadModels;
 
 namespace Talk.EsBase.Server.Modules.Projections
@@ -20,9 +22,22 @@ namespace Talk.EsBase.Server.Modules.Projections
                             session.StoreAsync(
                                 new CustomerVehicles
                                 {
-                                    Id = e.CustomerId,
-                                    DisplayName = e.DisplayName
+                                    Id = GetDbId(e.CustomerId),
+                                    DisplayName = e.DisplayName,
+                                    Vehicles = new List<CustomerVehicles.Vehicle>()
                                 }
+                            ),
+                    Messages.Vehicle.Events.VehicleRegistered e =>
+                        () =>
+                            Update(
+                                GetDbId(e.CustomerId),
+                                c => c.Vehicles.Add(
+                                    new CustomerVehicles.Vehicle
+                                    {
+                                        VehicleId = e.VehicleId,
+                                        Registration = e.Registration,
+                                        State = e.State
+                                    })
                             ),
                     _ => (Func<Task>) null
                 };

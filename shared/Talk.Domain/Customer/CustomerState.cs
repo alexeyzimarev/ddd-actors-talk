@@ -1,5 +1,6 @@
 using Talk.EventSourcing;
 using static System.String;
+using static Talk.Messages.Customer.Events;
 
 namespace Talk.Domain.Customer
 {
@@ -10,7 +11,7 @@ namespace Talk.Domain.Customer
         public override CustomerState When(CustomerState state, object @event)
             => @event switch
                 {
-                    Events.CustomerRegistered e =>
+                    CustomerRegistered e =>
                         With(state, x =>
                         {
                             x.Id = e.CustomerId;

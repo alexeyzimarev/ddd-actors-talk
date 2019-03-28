@@ -1,6 +1,6 @@
 using Talk.EventSourcing;
 using static System.String;
-using static Talk.Domain.Vehicle.Events;
+using static Talk.Messages.Vehicle.Events;
 
 namespace Talk.Domain.Vehicle
 {

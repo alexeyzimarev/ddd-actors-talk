@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ServiceModel.Channels;
 using MassTransit;
 using MassTransit.AspNetCoreIntegration;
 using Microsoft.AspNetCore.Builder;
@@ -16,7 +17,6 @@ using Talk.EsBase.Server.Modules.Customers;
 using Talk.EsBase.Server.Modules.Projections;
 using Talk.EsBase.Server.Modules.Sensors;
 using Talk.EsBase.Server.Modules.Vehicles;
-using Talk.Messages.Customer;
 using static Talk.EsBase.Server.Infrastructure.EventStore.EventStoreConfiguration;
 using static Talk.EsBase.Server.Infrastructure.RavenDb.RavenDbConfiguration;
 using EventHandler = Talk.EventSourcing.EventHandler;
@@ -69,18 +69,34 @@ namespace Talk.EsBase.Server
                     new AggregateStore(esConnection));
 
             var customerService = new CustomerCommandService(store);
-            services.AddSingleton(customerService);
-            services.AddSingleton(new VehicleCommandService(store));
-            services.AddSingleton(new SensorCommandService(store));
+            var vehicleService = new VehicleCommandService(store);
+            var sensorService = new SensorCommandService(store);
 
             services.AddMassTransit(
                 MassTransitConfiguration.ConfigureBus(
                     "rabbitmq://localhost", "guest", "guest",
-                    ("talk-telemetry", ep =>
-                        ep.Handler<Commands.RegisterCustomer>( ctx => customerService.Handle(ctx.Message)))
-//                    ("talk-customers", ep => { }),
-//                    ("talk-vehicles", ep => { }))
-            ));
+                    ("talk-customer", ep =>
+                    {
+                        ep.Handler<Messages.Customer.Commands.RegisterCustomer>(
+                            ctx => customerService.Handle(ctx.Message));
+                    }),
+                    ("talk-vehicle", ep =>
+                    {
+                        ep.Handler<Messages.Vehicle.Commands.RegisterVehicle>(
+                            ctx => vehicleService.Handle(ctx.Message));
+                        ep.Handler<Messages.Vehicle.Commands.AdjustMaxSpeed>(
+                            ctx => vehicleService.Handle(ctx.Message));
+                        ep.Handler<Messages.Vehicle.Commands.AdjustMaxTemperature>(
+                            ctx => vehicleService.Handle(ctx.Message));
+                    }),
+                    ("talk-sensor", ep =>
+                    {
+                        ep.Handler<Messages.Sensor.Commands.SensorInstallation>(
+                            ctx => sensorService.Handle(ctx.Message));
+                        ep.Handler<Messages.Sensor.Commands.SensorTelemetry>(
+                            ctx => sensorService.Handle(ctx.Message));
+                    }))
+            );
 
             IAsyncDocumentSession GetSession() => documentStore.OpenAsyncSession();
         }
