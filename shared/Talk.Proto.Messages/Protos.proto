@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package messages;
+option csharp_namespace = "Talk.Proto.Messages";
+
+message RegisterCustomer {
+    string CustomerId = 1;
+    string DisplayName = 2;
+}
+
+message RegisterVehicle {
+    string VehicleId = 1;
+    string CustomerId = 2;
+    string Registration = 3;
+    string MakeModel = 4;
+    int32 MaxSpeed = 5;
+    int32 MaxTemperature = 6;
+}
+
+message RegisterVehicleTelemetry {
+    string VehicleId = 1;
+    string SensorId = 2;
+    int32 Speed = 3;
+    int32 Temperature = 4;
+}
+message SensorInstallation {
+    string SensorId = 1;
+    string VehicleId = 2;
+}
+
+message SensorTelemetry {
+    string SensorId = 1;
+    int32 Speed = 2;
+    int32 Temperature = 3;
+}
+
+message Ack {
+    bool Success = 1;
+}

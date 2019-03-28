@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package VehiclesManagement;
+
+service VehicleService {
+  rpc Register (RegisterVehicle) returns (Ack) {}
+  rpc AdjustMaxSpeed (AdjustMaximumSpeed) returns (Ack) {}
+  rpc AdjustMaxTemp (AdjustMaxTemperature) returns (Ack) {}
+}
+
+message RegisterVehicle {
+  string vehicleId = 1;
+  string customerId = 2;
+  string registration = 3;
+  string makeModel = 4;
+  int32 maxSpeed = 5;
+  int32 maxTemperature = 6;
+}
+
+message AdjustMaximumSpeed {
+  string vehicleId = 1;
+  int32 maxSpeed = 2;
+}
+
+message AdjustMaxTemperature {
+  string vehicleId = 1;
+  int32 maxTemperature = 2;
+}
+
+message Ack {
+  string message = 1;
+}
+

@@ -15,7 +15,14 @@ namespace Talk.Client
             var bus = BusConfiguration.ConfigureMassTransit();
             await bus.StartAsync();
 
-//            await CustomerSeed.Publish(bus);
+            Console.WriteLine("Press enter to seed customers");
+            Console.ReadLine();
+
+            await CustomerSeed.Publish(bus);
+
+            Console.WriteLine("Press enter to seed vehicles");
+            Console.ReadLine();
+
             await VehicleSeed.Publish(bus);
 
             Console.WriteLine("Press any key to exit...");

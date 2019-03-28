@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talk.Client", "Talk.Client\Talk.Client.csproj", "{F9F40E44-9C4D-4327-A2B9-C1B3B5BB878B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talk.Messages", "..\shared\Talk.Messages\Talk.Messages.csproj", "{D9CD5F01-1E55-47E5-B4C7-D6C9B2DEB82E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talk.Messages", "..\..\shared\Talk.Messages\Talk.Messages.csproj", "{D9CD5F01-1E55-47E5-B4C7-D6C9B2DEB82E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

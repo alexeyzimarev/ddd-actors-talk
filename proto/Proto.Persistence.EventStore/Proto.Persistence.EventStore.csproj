@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>0.2.3</Version>
+    <Authors>Alexey Zimarev</Authors>
+    <Company>
+    </Company>
+    <Description>EventStore persistence for ProtoActor</Description>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>http://proto.actor/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/alexeyzimarev/proto.persistence.eventstore</RepositoryUrl>
+    <PackageTags>actors actor model concurrency proto protoactor eventstore</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EventStore.Client" Version="5.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Proto.Actor\Proto.Actor.csproj" />
+    <ProjectReference Include="..\Proto.Persistence\Proto.Persistence.csproj" />
+  </ItemGroup>
+</Project>
