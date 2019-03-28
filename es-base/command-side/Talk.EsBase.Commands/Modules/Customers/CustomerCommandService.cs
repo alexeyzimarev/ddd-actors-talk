@@ -8,15 +8,15 @@ namespace Talk.EsBase.Commands.Modules.Customers
     public class CustomerCommandService : CommandService<CustomerState>
     {
         public CustomerCommandService(IAggregateStore store)
-            : base(store) { }
-
-        public Task Handle(RegisterCustomer command)
-            => Handle(
-                command.CustomerId,
-                state => Customer.Register(
-                    command.CustomerId,
-                    command.DisplayName
+            : base(store)
+        {
+            When<RegisterCustomer>(
+                cmd => cmd.CustomerId,
+                (state, cmd) => Customer.Register(
+                    cmd.CustomerId,
+                    cmd.DisplayName
                 )
             );
+        }
     }
 }

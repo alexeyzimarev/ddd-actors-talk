@@ -20,9 +20,10 @@ namespace Talk.Domain.Sensor
             int speed,
             int temperature
         ) =>
-            state.Apply(new Events.TelemetryReceived
+            state.Apply(new Events.SensorTelemetryReceived
             {
                 SensorId = state.Id,
+                VehicleId = state.VehicleId,
                 Speed = speed,
                 Temperature = temperature
             });

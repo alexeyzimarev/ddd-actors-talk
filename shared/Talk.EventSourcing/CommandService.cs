@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -22,14 +23,34 @@ namespace Talk.EventSourcing
                 (x, e) => x.When(x, e)
             );
 
-        protected async Task Handle(
+        public Task Handle<TCommand>(TCommand command)
+        {
+            var handler = _handlers[typeof(TCommand)];
+            return handler(command);
+        }
+
+        protected void When<TCommand>(
+            Func<TCommand, string> getId,
+            Func<T, TCommand, AggregateState<T>.Result> update)
+            where TCommand : class => _handlers.Add(
+            typeof(TCommand),
+            cmd =>
+            {
+                var command = cmd as TCommand;
+                return Handle(command, getId(command), update);
+            });
+
+        async Task Handle<TCommand>(
+            TCommand command,
             string id,
-            Func<T, AggregateState<T>.Result> update)
+            Func<T, TCommand, AggregateState<T>.Result> update)
         {
             try
             {
+                _log.Debug("Processing command {command}", command);
+
                 var state = await Load(id);
-                await _store.Save(state.Version, update(state));
+                await _store.Save(state.Version, update(state, command));
             }
             catch (Exception e)
             {
@@ -37,5 +58,8 @@ namespace Talk.EventSourcing
                 throw;
             }
         }
+
+        readonly Dictionary<Type, Func<object, Task>> _handlers =
+            new Dictionary<Type, Func<object, Task>>();
     }
 }

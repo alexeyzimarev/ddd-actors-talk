@@ -2,14 +2,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Raven.Client.Documents.Linq;
 using Serilog;
 using Serilog.Events;
-using Talk.EsBase.Queries.Infrastructure.Prometheus;
+using Talk.EsBase.Commands.Infrastructure.Prometheus;
 using EventHandler = Talk.EventSourcing.EventHandler;
 using ILogger = Serilog.ILogger;
 
-namespace Talk.EsBase.Queries.Infrastructure.EventStore
+namespace Talk.EsBase.Commands.Infrastructure.EventStore
 {
     public class SubscriptionManager
     {

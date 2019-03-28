@@ -6,7 +6,7 @@ namespace Talk.Domain.Sensor
 {
     public class SensorState : AggregateState<SensorState>
     {
-        string VehicleId { get; set; }
+        internal string VehicleId { get; private set; }
         int Speed { get; set; }
         int Temperature { get; set; }
 
@@ -19,7 +19,7 @@ namespace Talk.Domain.Sensor
                             x.Id = e.SensorId;
                             x.VehicleId = e.VehicleId;
                         }),
-                    TelemetryReceived e =>
+                    SensorTelemetryReceived e =>
                         With(state, x =>
                         {
                             x.Speed = e.Speed;

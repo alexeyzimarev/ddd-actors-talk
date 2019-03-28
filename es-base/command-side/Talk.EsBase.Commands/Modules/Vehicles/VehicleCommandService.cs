@@ -8,31 +8,34 @@ namespace Talk.EsBase.Commands.Modules.Vehicles
     public class VehicleCommandService : CommandService<VehicleState>
     {
         public VehicleCommandService(IAggregateStore store)
-            : base(store) { }
-
-        public Task Handle(RegisterVehicle command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.Register(
-                    command.VehicleId,
-                    command.CustomerId,
-                    command.MakeModel,
-                    command.Registration,
-                    command.MaxSpeed,
-                    command.MaxTemperature
+            : base(store)
+        {
+            When<RegisterVehicle>(
+                cmd => cmd.VehicleId,
+                (state, cmd) => Vehicle.Register(
+                    cmd.VehicleId,
+                    cmd.CustomerId,
+                    cmd.MakeModel,
+                    cmd.Registration,
+                    cmd.MaxSpeed,
+                    cmd.MaxTemperature
                 )
             );
 
-        public Task Handle(AdjustMaxSpeed command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.AdjustMaxSpeed(state, command.MaxSpeed)
+            When<AdjustMaxSpeed>(
+                cmd => cmd.VehicleId,
+                (state, cmd) => Vehicle.AdjustMaxSpeed(state, cmd.MaxSpeed)
             );
 
-        public Task Handle(AdjustMaxTemperature command)
-            => Handle(
-                command.VehicleId,
-                state => Vehicle.AdjustMaxTemperature(state, command.MaxTemperature)
+            When<AdjustMaxTemperature>(
+                cmd => cmd.VehicleId,
+                (state, cmd) => Vehicle.AdjustMaxTemperature(state, cmd.MaxTemperature)
             );
+
+            When<RegisterVehicleTelemetry>(
+                cmd => cmd.VehicleId,
+                (state, cmd) => Vehicle.ProcessTelemetry(state, cmd.Speed, cmd.Temperature)
+            );
+        }
     }
 }

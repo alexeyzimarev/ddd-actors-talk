@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Talk.Domain.Sensor;
 using Talk.EventSourcing;
+using Talk.Messages.Sensor;
 using static Talk.Messages.Sensor.Commands;
 
 namespace Talk.EsBase.Commands.Modules.Sensors
@@ -8,25 +9,24 @@ namespace Talk.EsBase.Commands.Modules.Sensors
     public class SensorCommandService : CommandService<SensorState>
     {
         public SensorCommandService(IAggregateStore store)
-            : base(store) { }
-
-        public Task Handle(SensorInstallation command)
-            => Handle(
-                command.SensorId,
-                state => Sensor.Install(
-                    command.SensorId,
-                    command.VehicleId
+            : base(store)
+        {
+            When<SensorInstallation>(
+                cmd => cmd.SensorId,
+                (state, cmd) => Sensor.Install(
+                    cmd.SensorId,
+                    cmd.VehicleId
                 )
             );
 
-        public Task Handle(SensorTelemetry command)
-            => Handle(
-                command.SensorId,
-                state => Sensor.ReceiveTelemetry(
+            When<SensorTelemetry>(
+                cmd => cmd.SensorId,
+                (state, cmd) => Sensor.ReceiveTelemetry(
                     state,
-                    command.Speed,
-                    command.Temperature
+                    cmd.Speed,
+                    cmd.Temperature
                 )
             );
+        }
     }
 }

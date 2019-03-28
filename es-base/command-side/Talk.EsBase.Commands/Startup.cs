@@ -12,6 +12,7 @@ using Talk.EsBase.Commands.Infrastructure.Prometheus;
 using Talk.EsBase.Commands.Modules.Customers;
 using Talk.EsBase.Commands.Modules.Sensors;
 using Talk.EsBase.Commands.Modules.Vehicles;
+using Talk.EventSourcing;
 using static Talk.EsBase.Commands.Infrastructure.EventStore.EventStoreConfiguration;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -40,9 +41,6 @@ namespace Talk.EsBase.Commands
                 Configuration["EventStore:ConnectionString"],
                 Environment.ApplicationName);
 
-            services.AddSingleton<IHostedService>(
-                new EventStoreService(esConnection)
-            );
             var store =
                 new MeasuredStore(
                     new AggregateStore(esConnection));
@@ -51,7 +49,7 @@ namespace Talk.EsBase.Commands
             var vehicleService = new VehicleCommandService(store);
             var sensorService = new SensorCommandService(store);
 
-            services.AddMassTransit(
+            var bus =
                 MassTransitConfiguration.ConfigureBus(
                     "rabbitmq://localhost", "guest", "guest",
                     ("talk-customer", ep =>
@@ -67,6 +65,8 @@ namespace Talk.EsBase.Commands
                             ctx => vehicleService.Handle(ctx.Message));
                         ep.Handler<Messages.Vehicle.Commands.AdjustMaxTemperature>(
                             ctx => vehicleService.Handle(ctx.Message));
+                        ep.Handler<Messages.Vehicle.Commands.RegisterVehicleTelemetry>(
+                            ctx => vehicleService.Handle(ctx.Message));
                     }),
                     ("talk-sensor", ep =>
                     {
@@ -74,7 +74,21 @@ namespace Talk.EsBase.Commands
                             ctx => sensorService.Handle(ctx.Message));
                         ep.Handler<Messages.Sensor.Commands.SensorTelemetry>(
                             ctx => sensorService.Handle(ctx.Message));
-                    }))
+                    }));
+
+            services.AddMassTransit(bus);
+
+            var reactorsSubscriptionManager = new SubscriptionManager(
+                esConnection,
+                new EsCheckpointStore(esConnection, "reactors-checkpoint"),
+                "commandsReactors",
+                ConfigureReactors(bus)
+            );
+
+            services.AddSingleton<IHostedService>(
+                new EventStoreService(
+                    esConnection,
+                    reactorsSubscriptionManager)
             );
         }
 
@@ -87,6 +101,17 @@ namespace Talk.EsBase.Commands
 
             app.UseMetricServer();
             app.UseHttpMetrics();
+        }
+
+        static EventHandler[] ConfigureReactors(
+            IPublishEndpoint publishEndpoint
+        )
+        {
+            return new EventHandler[]
+            {
+                @event => TelemetryReactor.React(
+                    @event, cmd => publishEndpoint.Publish(cmd))
+            };
         }
 
         static void MapEvents()

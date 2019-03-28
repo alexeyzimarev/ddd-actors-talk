@@ -13,7 +13,7 @@ namespace Talk.Client.Seeds
                             new
                             {
                                 CustomerId = x,
-                                VehicleIds = Enumerable.Range(1, 100)
+                                VehicleIds = Enumerable.Range(1, 50)
                             })
                     .SelectMany(x =>
                         x.VehicleIds.Select(v =>

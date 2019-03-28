@@ -13,10 +13,12 @@ namespace Talk.EsBase.Queries.Modules.Projections
             TypeMapper.Map<Messages.Vehicle.Events.VehicleRegistered>("VehicleRegistered");
             TypeMapper.Map<Messages.Vehicle.Events.VehicleMaxSpeedAdjusted>("VehicleMaxSpeedAdjusted");
             TypeMapper.Map<Messages.Vehicle.Events.VehicleMaxTemperatureAdjusted>("VehicleMaxTemperatureAdjusted");
+            TypeMapper.Map<Messages.Vehicle.Events.VehicleSpeeingDetected>("VehicleSpeedingDetected");
+            TypeMapper.Map<Messages.Vehicle.Events.VehicleOverheated>("VehicleOverheated");
 
             // Sensors
             TypeMapper.Map<Messages.Sensor.Events.SensorInstalled>("SensorInstalled");
-            TypeMapper.Map<Messages.Sensor.Events.TelemetryReceived>("TelemetryReceived");
+            TypeMapper.Map<Messages.Sensor.Events.SensorTelemetryReceived>("SensorTelemetryReceived");
         }
     }
 }

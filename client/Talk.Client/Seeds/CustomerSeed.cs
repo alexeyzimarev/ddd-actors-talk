@@ -8,7 +8,7 @@ namespace Talk.Client.Seeds
     public static class CustomerSeed
     {
         public static Task Publish(IPublishEndpoint bus) =>
-            Task.WhenAll(Enumerable.Range(1, 1000).Select(id =>
+            Task.WhenAll(Enumerable.Range(1, 100).Select(id =>
                 bus.Publish(
                     new Commands.RegisterCustomer
                     {

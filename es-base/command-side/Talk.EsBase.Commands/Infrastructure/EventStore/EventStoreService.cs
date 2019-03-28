@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
@@ -10,11 +11,14 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
     {
         readonly IEventStoreConnection _esConnection;
         readonly ConnectionSupervisor _supervisor;
+        readonly SubscriptionManager[] _subscriptionManager;
 
         public EventStoreService(
-            IEventStoreConnection esConnection)
+            IEventStoreConnection esConnection,
+            params SubscriptionManager[] subscriptionManagers)
         {
             _esConnection = esConnection;
+            _subscriptionManager = subscriptionManagers;
             _supervisor = new ConnectionSupervisor(
                 esConnection,
                 () => Log.Fatal("Fatal failure with EventStore connection"));
@@ -24,6 +28,11 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
         {
             _supervisor.Initialize();
             await _esConnection.ConnectAsync();
+
+            await Task.WhenAll(
+                _subscriptionManager
+                    .Select(projection => projection.Start())
+            );
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

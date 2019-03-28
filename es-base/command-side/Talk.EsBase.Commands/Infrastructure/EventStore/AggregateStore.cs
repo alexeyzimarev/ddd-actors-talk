@@ -2,13 +2,16 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using Serilog;
 using Talk.EventSourcing;
+using ILogger = Serilog.ILogger;
 
 namespace Talk.EsBase.Commands.Infrastructure.EventStore
 {
     public class AggregateStore : IAggregateStore
     {
         readonly IEventStoreConnection _connection;
+        static readonly ILogger _log = Log.ForContext<AggregateStore>();
 
         public AggregateStore(IEventStoreConnection connection)
             => _connection = connection;
@@ -17,9 +20,15 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
             long version,
             AggregateState<T>.Result update)
             where T : class, IAggregateState<T>, new()
-            => _connection.AppendEvents(
-                update.State.StreamName, version, update.Events.ToArray()
+        {
+            var toSave = update.Events.ToArray();
+            foreach (var @event in toSave)
+                _log.Debug("Persisting event {event}", @event);
+
+            return _connection.AppendEvents(
+                update.State.StreamName, version, toSave
             );
+        }
 
         public async Task<T> Load<T>(string id, Func<T, object, T> when)
             where T : IAggregateState<T>, new()

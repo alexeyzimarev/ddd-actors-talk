@@ -16,9 +16,9 @@ namespace Talk.EsBase.Commands
             var configuration = BuildConfiguration(args);
 
             Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
                 .WriteTo.Console()
                 .WriteTo.Seq("http://localhost:5341")
-                .MinimumLevel.Information()
                 .CreateLogger();
 
             ConfigureWebHost(configuration).Build().Run();

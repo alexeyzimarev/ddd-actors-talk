@@ -8,7 +8,7 @@ namespace Talk.EsBase.Commands.Modules.Sensors
         public static void Map()
         {
             TypeMapper.Map<Events.SensorInstalled>("SensorInstalled");
-            TypeMapper.Map<Events.TelemetryReceived>("TelemetryReceived");
+            TypeMapper.Map<Events.SensorTelemetryReceived>("SensorTelemetryReceived");
         }
     }
 }

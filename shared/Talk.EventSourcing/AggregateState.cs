@@ -50,6 +50,9 @@ namespace Talk.EventSourcing
             return newState;
         }
 
+        public Result EmptyResult()
+            => new Result(this as T, new List<object>());
+
         public class Result
         {
             public T State { get; }
@@ -70,12 +73,23 @@ namespace Talk.EventSourcing
             return new Result(newState, events);
         }
 
+        public Result Apply(
+            Result result,
+            params object[] events)
+        {
+            var newState = result.State;
+            newState = events.Aggregate(newState, Apply);
+            return new Result(newState, result.Events.ToList().Concat(events));
+        }
+
         class InvalidEntityState : Exception
         {
             public InvalidEntityState(object entity, string message)
                 : base(
                     $"Entity {entity.GetType().Name} state change rejected, {message}"
-                ) { }
+                )
+            {
+            }
         }
     }
 }

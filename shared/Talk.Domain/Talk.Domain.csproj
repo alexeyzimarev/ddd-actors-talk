@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Talk.Messages\Talk.Messages.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LibLog" Version="5.0.6" />
+    </ItemGroup>
+
 </Project>
