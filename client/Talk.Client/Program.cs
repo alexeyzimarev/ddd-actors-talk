@@ -16,7 +16,6 @@ namespace Talk.Client
             await bus.StartAsync();
 
 //            await CustomerSeed.Publish(bus);
-
             await VehicleSeed.Publish(bus);
 
             Console.WriteLine("Press any key to exit...");
