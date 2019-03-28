@@ -28,6 +28,9 @@ namespace Talk.Domain.Sensor
                     _ => state
                 };
 
+        public override string GetStreamName(string id)
+            => $"Sensor-{id}";
+
         protected override bool EnsureValidState(SensorState newState)
             => !IsNullOrWhiteSpace(newState.Id)
                && !IsNullOrWhiteSpace(newState.VehicleId);

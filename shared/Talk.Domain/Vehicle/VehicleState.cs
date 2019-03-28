@@ -53,6 +53,9 @@ namespace Talk.Domain.Vehicle
             }
         }
 
+        public override string GetStreamName(string id)
+            => $"Vehicle-{id}";
+
         protected override bool EnsureValidState(VehicleState newState)
             => newState switch
                 {

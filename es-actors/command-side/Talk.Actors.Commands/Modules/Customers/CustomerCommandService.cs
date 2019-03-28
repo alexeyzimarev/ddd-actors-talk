@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Talk.Domain.Customer;
 using Talk.EventSourcing;
 using static Talk.Messages.Customer.Commands;

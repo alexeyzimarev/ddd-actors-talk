@@ -20,6 +20,9 @@ namespace Talk.Domain.Customer
                     _ => state
                 };
 
+        public override string GetStreamName(string id)
+            => $"Customer-{id}";
+
         protected override bool EnsureValidState(CustomerState newState)
             => !IsNullOrWhiteSpace(newState.Id)
                && !IsNullOrWhiteSpace(newState.DisplayName);

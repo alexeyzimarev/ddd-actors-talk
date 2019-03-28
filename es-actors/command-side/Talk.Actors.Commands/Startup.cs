@@ -58,8 +58,6 @@ namespace Talk.Actors.Commands
                     new AggregateStore(esConnection));
 
             var customerService = new CustomerCommandService(store);
-            var vehicleService = new VehicleCommandService(store);
-            var sensorService = new SensorCommandService(store);
 
             var bus =
                 MassTransitConfiguration.ConfigureBus(
@@ -68,24 +66,6 @@ namespace Talk.Actors.Commands
                     {
                         ep.Handler<Messages.Customer.Commands.RegisterCustomer>(
                             ctx => customerService.Handle(ctx.Message));
-                    }),
-                    ("talk-vehicle", ep =>
-                    {
-                        ep.Handler<Messages.Vehicle.Commands.RegisterVehicle>(
-                            ctx => vehicleService.Handle(ctx.Message));
-                        ep.Handler<Messages.Vehicle.Commands.AdjustMaxSpeed>(
-                            ctx => vehicleService.Handle(ctx.Message));
-                        ep.Handler<Messages.Vehicle.Commands.AdjustMaxTemperature>(
-                            ctx => vehicleService.Handle(ctx.Message));
-                        ep.Handler<Messages.Vehicle.Commands.RegisterVehicleTelemetry>(
-                            ctx => vehicleService.Handle(ctx.Message));
-                    }),
-                    ("talk-sensor", ep =>
-                    {
-                        ep.Handler<Messages.Sensor.Commands.SensorInstallation>(
-                            ctx => sensorService.Handle(ctx.Message));
-                        ep.Handler<Messages.Sensor.Commands.SensorTelemetry>(
-                            ctx => sensorService.Handle(ctx.Message));
                     }));
 
             services.AddMassTransit(bus);

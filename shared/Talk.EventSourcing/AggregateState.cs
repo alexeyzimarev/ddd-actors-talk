@@ -21,7 +21,7 @@ namespace Talk.EventSourcing
     {
         public abstract T When(T state, object @event);
 
-        public string GetStreamName(string id) => $"{typeof(T).Name}-{id}";
+        public abstract string GetStreamName(string id);
 
         public string StreamName => GetStreamName(Id);
 
