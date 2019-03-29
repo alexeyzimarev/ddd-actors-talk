@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Proto;
 using Proto.Persistence;
 using Talk.EventSourcing;
-using Talk.Proto.Messages;
+using Talk.Proto.Messages.Commands;
 
 namespace Talk.Actors.Commands.Infrastructure.ProtoActor
 {
-    public class ServiceActor<T> : IActor
+    public abstract class ServiceActor<T> : IActor
         where T : AggregateState<T>, new()
     {
         protected T State { get; set; }
@@ -34,6 +34,7 @@ namespace Talk.Actors.Commands.Infrastructure.ProtoActor
             if (context.Sender != null)
                 context.Respond(new Ack());
         }
+
         void ApplyEvent(Event @event)
             => State = State.When(State, @event.Data);
 

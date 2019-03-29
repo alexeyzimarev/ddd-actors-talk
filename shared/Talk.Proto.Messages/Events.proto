@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package messages;
+option csharp_namespace = "Talk.Proto.Messages.Events";
+
+message CustomerRegistered {
+    string CustomerId = 1;
+    string DisplayName = 2;
+}
+
+message VehicleRegistered {
+    string VehicleId = 1;
+    string CustomerId = 2;
+    string Registration = 3;
+    string MakeModel = 4;
+    int32 MaxSpeed = 5;
+    int32 MaxTemperature = 6;
+    string State = 7;
+}
+
+message VehicleMaxSpeedAdjusted {
+    string VehicleId = 1;
+    int32 MaxSpeed = 2;
+}
+
+message VehicleMaxTemperatureAdjusted {
+    string VehicleId = 1;
+    int32 MaxTemperature = 2;
+}
+
+message VehicleOverheated {
+    string VehicleId = 1;
+    string CustomerId = 2;
+    int32 Temperature = 3;
+}
+
+message VehicleSpeedingDetected {
+    string VehicleId = 1;
+    string CustomerId = 2;
+    int32 RecordedSpeed = 3;
+}
+
+message SensorInstalled {
+    string SensorId = 1;
+    string VehicleId = 2;
+}
+
+message SensorTelemetryReceived {
+    string SensorId = 1;
+    int32 Speed = 2;
+    int32 Temperature = 3;
+}
+
+message AckEvent {
+    bool Success = 1;
+}
+

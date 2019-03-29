@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using Proto;
 using Proto.Cluster;
 using Proto.Remote;
-using Talk.Proto.Messages.Commands;
+using Talk.Proto.Messages.Events;
 
-namespace Talk.Actors.Commands.Infrastructure.ProtoActor
+namespace Talk.Actors.Queries.Infrastructure.ProtoActor
 {
     public static class ProtoCluster
     {
@@ -28,7 +28,7 @@ namespace Talk.Actors.Commands.Infrastructure.ProtoActor
         public static async Task SendToActor<T>(string prefix, string id, T command)
         {
             var pid = await GetActor(prefix, id);
-            await RootContext.Empty.RequestAsync<Ack>(pid, command);
+            await RootContext.Empty.RequestAsync<AckEvent>(pid, command);
         }
     }
 }

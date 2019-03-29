@@ -12,14 +12,6 @@ services:
     - EVENTSTORE_EXT_HTTP_PORT=2113
     - EVENTSTORE_EXT_TCP_PORT=1113
 
-  seq:
-    container_name: talk-seq
-    image: datalust/seq:latest
-    ports:
-    - 5341:80
-    environment:
-    - ACCEPT_EULA=Y
-
   consul:
     container_name: talk-consul
     image: consul:latest
@@ -55,11 +47,14 @@ services:
       - prometheus_config:/fragments/
       - ${PWD}/config/targets/prometheus.json:/etc/prometheus/targets/prometheus.json
       - ${PWD}/config/targets/grafana.json:/etc/prometheus/targets/grafana.json
+      - ${PWD}/config/targets/talk-commands.json:/etc/prometheus/targets/talk-commands.json
     command:
       - '--config.file=/fragments/complete/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-     - 9090:9090 
+      - 9090:9090 
+    depends_on:
+      - config-concat
 
   grafana:
     container_name: talk-grafana

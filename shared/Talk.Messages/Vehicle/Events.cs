@@ -37,6 +37,7 @@ namespace Talk.Messages.Vehicle
         public class VehicleOverheated
         {
             public string VehicleId { get; set; }
+            public string CustomerId { get; set; }
             public int Temperature { get; set; }
 
             public override string ToString()
@@ -46,6 +47,7 @@ namespace Talk.Messages.Vehicle
         public class VehicleSpeeingDetected
         {
             public string VehicleId { get; set; }
+            public string CustomerId { get; set; }
             public int RecordedSpeed { get; set; }
 
             public override string ToString()

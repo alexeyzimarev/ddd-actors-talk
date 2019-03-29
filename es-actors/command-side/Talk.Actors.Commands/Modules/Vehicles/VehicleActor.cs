@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Proto;
 using Proto.Persistence;
 using Talk.Actors.Commands.Infrastructure.ProtoActor;
 using Talk.Domain.Vehicle;
-using Talk.Proto.Messages;
+using Talk.Proto.Messages.Commands;
 
 namespace Talk.Actors.Commands.Modules.Vehicles
 {

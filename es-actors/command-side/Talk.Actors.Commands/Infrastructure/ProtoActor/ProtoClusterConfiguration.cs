@@ -9,9 +9,10 @@ using Proto.Cluster.Consul;
 using Proto.Persistence.EventStore;
 using Proto.Remote;
 using Talk.Actors.Commands.Infrastructure.EventStore;
+using Talk.Actors.Commands.Infrastructure.Prometheus;
 using Talk.Actors.Commands.Modules.Vehicles;
+using Talk.Proto.Messages.Commands;
 using ILogger = Serilog.ILogger;
-using ProtosReflection = Talk.Proto.Messages.ProtosReflection;
 
 // ReSharper disable ConvertClosureToMethodGroup
 
@@ -54,15 +55,17 @@ namespace Talk.Actors.Commands.Infrastructure.ProtoActor
             {
                 Logger.Information($"Starting proto cluster node on {_nodeAddress}:{_nodePort}");
 
-                Serialization.RegisterFileDescriptor(ProtosReflection.Descriptor);
+                Serialization.RegisterFileDescriptor(CommandsReflection.Descriptor);
 
                 var eventStoreProvider = new EventStoreProvider(_eventStoreConnection)
                     .WithTypeResolver(
                         t => TypeMapper.GetTypeName(t),
                         s => Type.GetType(s));
 
+                var measuredStore = new MeasuredActorStore(eventStoreProvider);
+
                 Remote.RegisterKnownKind("Vehicle",
-                    Props.FromProducer(() => new VehicleActor(eventStoreProvider))
+                    Props.FromProducer(() => new VehicleActor(measuredStore))
                         .WithReceiverMiddleware(next => Middleware.Metrics(next, "Vehicle")));
 
                 Cluster.Start(_clusterName, _nodeAddress, _nodePort, _consulProvider);

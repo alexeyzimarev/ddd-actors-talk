@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="EventStore.Client" Version="5.0.1" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="5.3.2" />
+    <PackageReference Include="MassTransit.Prometheus" Version="0.2.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="5.3.2" />
+    <PackageReference Include="RavenDB.Client" Version="4.1.4" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\proto\Proto.Actor\Proto.Actor.csproj" />
+    <ProjectReference Include="..\..\..\proto\Proto.Cluster.Consul\Proto.Cluster.Consul.csproj" />
+    <ProjectReference Include="..\..\..\proto\Proto.Cluster\Proto.Cluster.csproj" />
+    <ProjectReference Include="..\..\..\proto\Proto.Persistence.RavenDB\Proto.Persistence.RavenDB.csproj" />
+    <ProjectReference Include="..\..\..\proto\Proto.Remote\Proto.Remote.csproj" />
+    <ProjectReference Include="..\..\..\shared\Talk.Domain\Talk.Domain.csproj" />
+    <ProjectReference Include="..\..\..\shared\Talk.EventSourcing\Talk.EventSourcing.csproj" />
+    <ProjectReference Include="..\..\..\shared\Talk.Messages\Talk.Messages.csproj" />
+    <ProjectReference Include="..\..\..\shared\Talk.Proto.Messages\Talk.Proto.Messages.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+</Project>

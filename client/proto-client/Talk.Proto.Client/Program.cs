@@ -1,12 +1,8 @@
 using System;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
-using MassTransit.Logging;
-using MassTransit.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Proto;
@@ -15,9 +11,7 @@ using Proto.Cluster.Consul;
 using Proto.Remote;
 using Talk.Client;
 using Talk.Proto.Client.Seeds;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using ProtosReflection = Talk.Proto.Messages.ProtosReflection;
+using Talk.Proto.Messages.Commands;
 
 namespace Talk.Proto.Client
 {
@@ -30,7 +24,7 @@ namespace Talk.Proto.Client
             SetupThreadPool();
 
             Log.SetLoggerFactory(ConfigureLogger());
-            Serialization.RegisterFileDescriptor(ProtosReflection.Descriptor);
+            Serialization.RegisterFileDescriptor(CommandsReflection.Descriptor);
 
             _bus = BusConfiguration.ConfigureMassTransit();
             await _bus.StartAsync();

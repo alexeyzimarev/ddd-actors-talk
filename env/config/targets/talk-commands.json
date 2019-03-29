@@ -1,0 +1,8 @@
+[
+  {
+    "targets": [ "host.docker.internal:5000" ],
+    "labels": {
+      "job": "talk-commands"
+    }
+  }
+]

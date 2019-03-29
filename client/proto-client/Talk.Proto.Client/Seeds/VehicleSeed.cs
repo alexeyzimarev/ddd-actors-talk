@@ -8,6 +8,7 @@ using Proto.Cluster;
 using Proto.Remote;
 using Talk.Messages.Vehicle;
 using Talk.Proto.Messages;
+using Talk.Proto.Messages.Commands;
 
 namespace Talk.Proto.Client.Seeds
 {

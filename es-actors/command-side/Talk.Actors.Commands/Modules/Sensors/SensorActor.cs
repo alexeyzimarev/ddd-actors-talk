@@ -1,7 +1,7 @@
 using Proto.Persistence;
 using Talk.Actors.Commands.Infrastructure.ProtoActor;
 using Talk.Domain.Sensor;
-using Talk.Proto.Messages;
+using Talk.Proto.Messages.Commands;
 
 namespace Talk.Actors.Commands.Modules.Sensors
 {
