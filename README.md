@@ -1,6 +1,6 @@
 # ddd-actors-talk
 
-DDD, EventSourcing and Actors talk
+[DDD, EventSourcing and Actors](https://sessionize.com/s/alexey-zimarev/ddd_event_sourcing_and_actors/22561) talk
 
 Premiered at WROC# where not everything went well :)
 
