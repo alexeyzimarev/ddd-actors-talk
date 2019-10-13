@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public static class EventStoreExtensions
     {

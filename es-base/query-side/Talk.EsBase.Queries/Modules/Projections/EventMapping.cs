@@ -1,4 +1,4 @@
-using Talk.EsBase.Queries.Infrastructure.EventStore;
+using Talk.EventStore;
 
 namespace Talk.EsBase.Queries.Modules.Projections
 {

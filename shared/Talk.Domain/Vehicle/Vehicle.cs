@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using static Talk.Messages.Vehicle.Events;
 
 namespace Talk.Domain.Vehicle
@@ -15,58 +14,49 @@ namespace Talk.Domain.Vehicle
         ) => new VehicleState()
             .Apply(new VehicleRegistered
             {
-                VehicleId = vehicleId,
-                CustomerId = customerId,
-                MakeModel = makeModel,
-                Registration = registration,
-                MaxSpeed = maxSpeed,
+                VehicleId      = vehicleId,
+                CustomerId     = customerId,
+                MakeModel      = makeModel,
+                Registration   = registration,
+                MaxSpeed       = maxSpeed,
                 MaxTemperature = maxTemperature,
-                State = "Just registered"
+                State          = "Just registered"
             });
 
-        public static VehicleState.Result AdjustMaxSpeed(
-            VehicleState state,
-            int maxSpeed
-        ) => state
-            .Apply(
-                new VehicleMaxSpeedAdjusted
-                {
-                    VehicleId = state.Id,
-                    MaxSpeed = maxSpeed
-                });
+        public static VehicleState.Result AdjustMaxSpeed(VehicleState state, int maxSpeed)
+            => state
+                .Apply(
+                    new VehicleMaxSpeedAdjusted
+                    {
+                        VehicleId = state.Id,
+                        MaxSpeed  = maxSpeed
+                    });
 
-        public static VehicleState.Result AdjustMaxTemperature(
-            VehicleState state,
-            int maxTemperature
-        ) => state
-            .Apply(
-                new VehicleMaxTemperatureAdjusted
-                {
-                    VehicleId = state.Id,
-                    MaxTemperature = maxTemperature
-                });
+        public static VehicleState.Result AdjustMaxTemperature(VehicleState state, int maxTemperature)
+            => state
+                .Apply(
+                    new VehicleMaxTemperatureAdjusted
+                    {
+                        VehicleId      = state.Id,
+                        MaxTemperature = maxTemperature
+                    });
 
-        public static VehicleState.Result ProcessTelemetry(
-            VehicleState state,
-            int speed,
-            int temperature
-        ) => state switch
+        public static VehicleState.Result ProcessTelemetry(VehicleState state, int speed, int temperature)
+            => state switch
             {
-                VehicleState s when speed > s.MaxSpeed =>
-                    state.Apply(
-                        new VehicleSpeeingDetected
-                        {
-                            VehicleId = state.Id,
-                            RecordedSpeed = speed
-                        }),
-                VehicleState s when temperature > s.MaxTemperature =>
-                    state.Apply(
-                        new VehicleOverheated
-                        {
-                            VehicleId = state.Id,
-                            Temperature = temperature
-                        }
-                    ),
+                { } s when speed > s.MaxSpeed => state.Apply(
+                    new VehicleSpeeingDetected
+                    {
+                        VehicleId     = state.Id,
+                        RecordedSpeed = speed
+                    }),
+                { } s when temperature > s.MaxTemperature => state.Apply(
+                    new VehicleOverheated
+                    {
+                        VehicleId   = state.Id,
+                        Temperature = temperature
+                    }
+                ),
                 _ => state.EmptyResult()
             };
     }

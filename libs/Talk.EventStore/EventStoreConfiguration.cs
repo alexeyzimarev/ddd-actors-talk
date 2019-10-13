@@ -1,6 +1,6 @@
 using EventStore.ClientAPI;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public static class EventStoreConfiguration
     {

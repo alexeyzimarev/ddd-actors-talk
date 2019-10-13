@@ -3,7 +3,7 @@ using EventStore.ClientAPI;
 using EventStore.ClientAPI.Exceptions;
 using ILogger = Serilog.ILogger;
 
-namespace Talk.EsBase.Queries.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public class ConnectionSupervisor
     {

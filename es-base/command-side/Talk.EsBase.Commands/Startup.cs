@@ -5,49 +5,36 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Prometheus;
-using Talk.EsBase.Commands.Infrastructure.EventStore;
-using Talk.EsBase.Commands.Infrastructure.MassTransit;
-using Talk.EsBase.Commands.Infrastructure.Prometheus;
+using Talk.EsBase.Commands.Infrastructure;
 using Talk.EsBase.Commands.Modules.Customers;
 using Talk.EsBase.Commands.Modules.Sensors;
 using Talk.EsBase.Commands.Modules.Vehicles;
 using Talk.EventSourcing;
-using static Talk.EsBase.Commands.Infrastructure.EventStore.EventStoreConfiguration;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Talk.EventStore;
+using static Talk.EventStore.EventStoreConfiguration;
 
 namespace Talk.EsBase.Commands
 {
     public class Startup
     {
-        public Startup(
-            IHostingEnvironment environment,
-            IConfiguration configuration
-        )
-        {
-            Environment = environment;
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
-        IHostingEnvironment Environment { get; }
         IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            PrometheusMetrics.TryConfigure(Environment.ApplicationName);
             MapEvents();
 
             var esConnection = ConfigureEsConnection(
                 Configuration["EventStore:ConnectionString"],
-                Environment.ApplicationName);
+                "es-base-commands"
+            );
 
-            var store =
-                new MeasuredStore(
-                    new AggregateStore(esConnection));
+            var store = new AggregateStore(esConnection);
 
             var customerService = new CustomerCommandService(store);
-            var vehicleService = new VehicleCommandService(store);
-            var sensorService = new SensorCommandService(store);
+            var vehicleService  = new VehicleCommandService(store);
+            var sensorService   = new SensorCommandService(store);
 
             var bus =
                 MassTransitConfiguration.ConfigureBus(
@@ -92,27 +79,20 @@ namespace Talk.EsBase.Commands
             );
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseMetricServer();
-            app.UseHttpMetrics();
         }
 
-        static EventHandler[] ConfigureReactors(
-            IPublishEndpoint publishEndpoint
-        )
-        {
-            return new EventHandler[]
+        static EventHandler[] ConfigureReactors(IPublishEndpoint publishEndpoint)
+            => new EventHandler[]
             {
                 @event => TelemetryReactor.React(
                     @event, cmd => publishEndpoint.Publish(cmd))
             };
-        }
 
         static void MapEvents()
         {

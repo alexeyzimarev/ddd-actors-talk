@@ -12,31 +12,28 @@ namespace Talk.EsBase.Queries.Infrastructure.RavenDb
     {
         public static async Task<ActionResult<T>> RunApiQuery<T>(
             this Func<IAsyncDocumentSession> getSession,
-            Func<IAsyncDocumentSession, Task<T>> query)
+            Func<IAsyncDocumentSession, Task<T>> query
+        )
         {
-            using (var session = getSession())
+            using var session = getSession();
+
+            try
             {
-                try
-                {
-                    return new OkObjectResult(await query(session));
-                }
-                catch (Exception e)
-                {
-                    return new BadRequestObjectResult(
-                        new
-                        {
-                            error = e.Message,
-                            stackTrace = e.StackTrace
-                        }
-                    );
-                }
+                return new OkObjectResult(await query(session));
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        error      = e.Message,
+                        stackTrace = e.StackTrace
+                    }
+                );
             }
         }
-        
-        public static async Task UpdateItem<T>(
-            this IAsyncDocumentSession session,
-            string id,
-            Action<T> update)
+
+        public static async Task UpdateItem<T>(this IAsyncDocumentSession session, string id, Action<T> update)
         {
             var item = await session.LoadAsync<T>(id);
             if (item == null) return;
@@ -47,7 +44,8 @@ namespace Talk.EsBase.Queries.Infrastructure.RavenDb
         public static async Task UpdateMultipleItems<T>(
             this IAsyncDocumentSession session,
             Expression<Func<T, bool>> query,
-            Action<T> update)
+            Action<T> update
+        )
         {
             var items = await session
                 .Query<T>()

@@ -20,11 +20,11 @@ namespace Talk.EsBase.Queries.Modules.Projections
                     Events.CustomerRegistered e =>
                         () =>
                             session.StoreAsync(
-                                new ReadModels.CustomerVehicles
+                                new CustomerVehicles
                                 {
                                     Id = GetDbId(e.CustomerId),
                                     DisplayName = e.DisplayName,
-                                    Vehicles = new List<ReadModels.CustomerVehicles.Vehicle>()
+                                    Vehicles = new List<CustomerVehicles.Vehicle>()
                                 }
                             ),
                     Messages.Vehicle.Events.VehicleRegistered e =>
@@ -32,7 +32,7 @@ namespace Talk.EsBase.Queries.Modules.Projections
                             Update(
                                 e.CustomerId,
                                 c => c.Vehicles.Add(
-                                    new ReadModels.CustomerVehicles.Vehicle
+                                    new CustomerVehicles.Vehicle
                                     {
                                         VehicleId = e.VehicleId,
                                         Registration = e.Registration,
@@ -44,14 +44,14 @@ namespace Talk.EsBase.Queries.Modules.Projections
 
             Task Update(
                 string id,
-                Action<ReadModels.CustomerVehicles> update)
+                Action<CustomerVehicles> update)
                 => session.UpdateItem(
                     GetDbId(id),
                     update
                 );
 
             string GetDbId(string vehicleId)
-                => ReadModels.CustomerVehicles.GetDatabaseId(vehicleId);
+                => CustomerVehicles.GetDatabaseId(vehicleId);
         }
     }
 }

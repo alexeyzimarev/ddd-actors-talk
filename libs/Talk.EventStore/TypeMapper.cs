@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public static class TypeMapper
     {

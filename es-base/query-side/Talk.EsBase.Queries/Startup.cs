@@ -4,41 +4,30 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Prometheus;
 using Raven.Client.Documents.Session;
-using Talk.EsBase.Queries.Infrastructure.EventStore;
-using Talk.EsBase.Queries.Infrastructure.Prometheus;
+using Talk.EsBase.Queries.Infrastructure;
 using Talk.EsBase.Queries.Infrastructure.RavenDb;
 using Talk.EsBase.Queries.Modules.Projections;
-using static Talk.EsBase.Queries.Infrastructure.EventStore.EventStoreConfiguration;
+using Talk.EventStore;
 using static Talk.EsBase.Queries.Infrastructure.RavenDb.RavenDbConfiguration;
+using static Talk.EventStore.EventStoreConfiguration;
 using EventHandler = Talk.EventSourcing.EventHandler;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Talk.EsBase.Queries
 {
     public class Startup
     {
-        public Startup(
-            IHostingEnvironment environment,
-            IConfiguration configuration
-        )
-        {
-            Environment = environment;
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
-        IHostingEnvironment Environment { get; }
         IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            PrometheusMetrics.TryConfigure(Environment.ApplicationName);
             EventMapping.Map();
 
             var esConnection = ConfigureEsConnection(
                 Configuration["EventStore:ConnectionString"],
-                Environment.ApplicationName);
+                "es-talk-queries");
             var documentStore = ConfigureRavenDb(
                 Configuration["RavenDb:Server"],
                 Configuration["RavenDb:Database"]
@@ -61,19 +50,17 @@ namespace Talk.EsBase.Queries
             IAsyncDocumentSession GetSession() => documentStore.OpenAsyncSession();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseMetricServer();
-            app.UseHttpMetrics();
         }
 
         static EventHandler[] ConfigureRavenDbProjections(
-            Func<IAsyncDocumentSession> getSession)
+            Func<IAsyncDocumentSession> getSession
+        )
             => new EventHandler[]
             {
                 new RavenDbProjection<ReadModels.VehicleItem>(

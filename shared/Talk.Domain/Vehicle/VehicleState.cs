@@ -1,7 +1,5 @@
-using System.Xml.Linq;
 using Talk.Domain.Logging;
 using Talk.EventSourcing;
-using Talk.Messages.Sensor;
 using static System.String;
 using static Talk.Messages.Vehicle.Events;
 
@@ -18,37 +16,32 @@ namespace Talk.Domain.Vehicle
         public override VehicleState When(VehicleState state, object @event)
         {
             return @event switch
+            {
+                VehicleRegistered e => With(state, x =>
                 {
-                    VehicleRegistered e =>
-                        With(state, x =>
-                        {
-                            x.Id = e.VehicleId;
-                            x.CustomerId = e.CustomerId;
-                            x.State = e.State;
-                            x.Registration = e.Registration;
-                            x.MaxSpeed = e.MaxSpeed;
-                            x.MaxTemperature = e.MaxTemperature;
-                        }),
-                    VehicleMaxSpeedAdjusted e =>
-                        With(state, x => x.MaxSpeed = e.MaxSpeed),
-                    VehicleMaxTemperatureAdjusted e =>
-                        With(state, x => x.MaxTemperature = e.MaxTemperature),
-                    VehicleOverheated e =>
-                        Overheated(e.Temperature),
-                    VehicleSpeeingDetected e =>
-                        Speeding(e.RecordedSpeed),
-                    _ => state
-                };
+                    x.Id             = e.VehicleId;
+                    x.CustomerId     = e.CustomerId;
+                    x.State          = e.State;
+                    x.Registration   = e.Registration;
+                    x.MaxSpeed       = e.MaxSpeed;
+                    x.MaxTemperature = e.MaxTemperature;
+                }),
+                VehicleMaxSpeedAdjusted e       => With(state, x => x.MaxSpeed = e.MaxSpeed),
+                VehicleMaxTemperatureAdjusted e => With(state, x => x.MaxTemperature = e.MaxTemperature),
+                VehicleOverheated e             => Overheated(e.Temperature),
+                VehicleSpeeingDetected e        => Speeding(e.RecordedSpeed),
+                _                               => state
+            };
 
             VehicleState Overheated(int temperature)
             {
-                _log.Warn($"Vehicle {state.Registration} is overheated. Temperature: {temperature}");
+                Log.Warn($"Vehicle {state.Registration} is overheated. Temperature: {temperature}");
                 return With(state, x => x.State = "Overheated");
             }
 
             VehicleState Speeding(int speed)
             {
-                _log.Warn($"Vehicle {state.Registration} is speeding. Speed: {speed}");
+                Log.Warn($"Vehicle {state.Registration} is speeding. Speed: {speed}");
                 return With(state, x => x.State = "Speeding");
             }
         }
@@ -58,13 +51,12 @@ namespace Talk.Domain.Vehicle
 
         protected override bool EnsureValidState(VehicleState newState)
             => newState switch
-                {
-                    VehicleState v when IsNullOrWhiteSpace(v.Id) ||
-                                        IsNullOrWhiteSpace(v.CustomerId) ||
-                                        IsNullOrWhiteSpace(v.Registration) => false,
-                    _ => true
-                };
+            {
+                { } v when IsNullOrWhiteSpace(v.Id) || IsNullOrWhiteSpace(v.CustomerId) ||
+                IsNullOrWhiteSpace(v.Registration) => false,
+                _ => true
+            };
 
-        static ILog _log = LogProvider.GetCurrentClassLogger();
+        static readonly ILog Log = LogProvider.GetCurrentClassLogger();
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
 
-namespace Talk.EsBase.Queries.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public class EsCheckpointStore : ICheckpointStore
     {

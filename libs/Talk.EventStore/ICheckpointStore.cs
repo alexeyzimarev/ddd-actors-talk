@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 
-namespace Talk.EsBase.Queries.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public interface ICheckpointStore
     {

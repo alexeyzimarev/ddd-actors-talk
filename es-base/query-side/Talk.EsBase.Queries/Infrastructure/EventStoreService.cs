@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Talk.EventStore;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EsBase.Queries.Infrastructure
 {
     public class EventStoreService : IHostedService
     {

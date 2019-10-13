@@ -1,54 +1,41 @@
 using System;
-using System.Net;
-using System.Threading;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using static System.Environment;
+using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
 
 namespace Talk.EsBase.Commands
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            SetupThreadPool();
-            var configuration = BuildConfiguration(args);
-
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
-
-            ConfigureWebHost(configuration).Build().Run();
+            
+            try
+            {
+                Log.Information("Starting web host");
+                CreateHostBuilder(args).Build().Run();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+                return 1;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
-        static IConfiguration BuildConfiguration(string[] args)
-            => new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", false, false)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .Build();
-
-        static IWebHostBuilder ConfigureWebHost(
-            IConfiguration configuration)
-            => new WebHostBuilder()
-                .UseStartup<Startup>()
-                .UseConfiguration(configuration)
-                .UseContentRoot(CurrentDirectory)
-                .UseSerilog()
-                .UseKestrel();
-
-        static void SetupThreadPool()
-        {
-            ThreadPool.GetMaxThreads(out var workerThreads, out var completionPortThreads);
-            ThreadPool.GetMinThreads(out workerThreads, out completionPortThreads);
-            workerThreads = Math.Max(workerThreads, 100);
-            completionPortThreads = Math.Max(completionPortThreads, 400);
-            ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
-
-            ServicePointManager.DefaultConnectionLimit = 400;
-            ServicePointManager.UseNagleAlgorithm = false;
-        }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>().UseSerilog());
     }
 }

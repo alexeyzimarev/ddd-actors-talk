@@ -1,4 +1,4 @@
-using Talk.EsBase.Commands.Infrastructure.EventStore;
+using Talk.EventStore;
 using static Talk.Messages.Vehicle.Events;
 
 namespace Talk.EsBase.Commands.Modules.Vehicles

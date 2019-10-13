@@ -10,21 +10,18 @@ namespace Talk.Domain.Customer
 
         public override CustomerState When(CustomerState state, object @event)
             => @event switch
+            {
+                CustomerRegistered e => With(state, x =>
                 {
-                    CustomerRegistered e =>
-                        With(state, x =>
-                        {
-                            x.Id = e.CustomerId;
-                            x.DisplayName = e.DisplayName;
-                        }),
-                    _ => state
-                };
+                    x.Id          = e.CustomerId;
+                    x.DisplayName = e.DisplayName;
+                }),
+                _ => state
+            };
 
-        public override string GetStreamName(string id)
-            => $"Customer-{id}";
+        public override string GetStreamName(string id) => $"Customer-{id}";
 
         protected override bool EnsureValidState(CustomerState newState)
-            => !IsNullOrWhiteSpace(newState.Id)
-               && !IsNullOrWhiteSpace(newState.DisplayName);
+            => !IsNullOrWhiteSpace(newState.Id) && !IsNullOrWhiteSpace(newState.DisplayName);
     }
 }

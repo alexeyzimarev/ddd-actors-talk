@@ -1,4 +1,4 @@
-using Talk.EsBase.Commands.Infrastructure.EventStore;
+using Talk.EventStore;
 using Talk.Messages.Customer;
 
 namespace Talk.EsBase.Commands.Modules.Customers

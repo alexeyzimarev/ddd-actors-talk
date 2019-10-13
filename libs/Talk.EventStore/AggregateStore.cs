@@ -6,7 +6,7 @@ using Serilog;
 using Talk.EventSourcing;
 using ILogger = Serilog.ILogger;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public class AggregateStore : IAggregateStore
     {

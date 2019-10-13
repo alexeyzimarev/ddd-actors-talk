@@ -4,32 +4,32 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Serilog;
 using Serilog.Events;
-using Talk.EsBase.Commands.Infrastructure.Prometheus;
 using EventHandler = Talk.EventSourcing.EventHandler;
 using ILogger = Serilog.ILogger;
 
-namespace Talk.EsBase.Commands.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public class SubscriptionManager
     {
-        static readonly ILogger _log =Log.ForContext<SubscriptionManager>();
+        static readonly ILogger _log = Log.ForContext<SubscriptionManager>();
 
-        readonly ICheckpointStore _checkpointStore;
-        readonly string _subscriptionName;
-        readonly IEventStoreConnection _connection;
-        readonly EventHandler[] _eventHandlers;
+        readonly ICheckpointStore        _checkpointStore;
+        readonly string                  _subscriptionName;
+        readonly IEventStoreConnection   _connection;
+        readonly EventHandler[]          _eventHandlers;
         EventStoreAllCatchUpSubscription _subscription;
 
         public SubscriptionManager(
             IEventStoreConnection connection,
             ICheckpointStore checkpointStore,
             string subscriptionName,
-            params EventHandler[] eventHandlers)
+            params EventHandler[] eventHandlers
+        )
         {
-            _connection = connection;
-            _checkpointStore = checkpointStore;
+            _connection       = connection;
+            _checkpointStore  = checkpointStore;
             _subscriptionName = subscriptionName;
-            _eventHandlers = eventHandlers;
+            _eventHandlers    = eventHandlers;
         }
 
         public async Task Start()
@@ -54,7 +54,8 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
 
         void SubscriptionDropped(
             EventStoreCatchUpSubscription subscription,
-            SubscriptionDropReason reason, Exception exception)
+            SubscriptionDropReason reason, Exception exception
+        )
         {
             _log.Warning(
                 exception,
@@ -70,7 +71,8 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
 
         async Task EventAppeared(
             EventStoreCatchUpSubscription _,
-            ResolvedEvent resolvedEvent)
+            ResolvedEvent resolvedEvent
+        )
         {
             if (resolvedEvent.Event.EventType.StartsWith("$")) return;
 
@@ -80,19 +82,9 @@ namespace Talk.EsBase.Commands.Infrastructure.EventStore
 
             try
             {
-                await PrometheusMetrics.Measure(async () =>
-                {
-                    await Task.WhenAll(_eventHandlers.Select(x => x(@event)));
+                await Task.WhenAll(_eventHandlers.Select(x => x(@event)));
 
-                    await _checkpointStore.StoreCheckpoint(
-                        resolvedEvent.OriginalPosition.Value
-                    );
-                }, PrometheusMetrics.SubscriptionTimer(_subscriptionName));
-
-                PrometheusMetrics.ObserveLeadTime(
-                    resolvedEvent.Event.EventType,
-                    resolvedEvent.Event.Created,
-                    _subscriptionName);
+                await _checkpointStore.StoreCheckpoint(resolvedEvent.OriginalPosition);
             }
             catch (Exception e)
             {

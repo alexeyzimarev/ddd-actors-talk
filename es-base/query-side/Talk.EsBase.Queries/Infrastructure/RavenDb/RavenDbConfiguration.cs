@@ -6,13 +6,11 @@ namespace Talk.EsBase.Queries.Infrastructure.RavenDb
 {
     public static class RavenDbConfiguration
     {
-        public static IDocumentStore ConfigureRavenDb(
-            string serverUrl,
-            string database)
+        public static IDocumentStore ConfigureRavenDb(string serverUrl, string database)
         {
             var store = new DocumentStore
             {
-                Urls = new[] {serverUrl},
+                Urls     = new[] {serverUrl},
                 Database = database
             };
             store.Initialize();

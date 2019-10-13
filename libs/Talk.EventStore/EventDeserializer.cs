@@ -2,7 +2,7 @@ using System.Text;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
 
-namespace Talk.EsBase.Queries.Infrastructure.EventStore
+namespace Talk.EventStore
 {
     public static class EventDeserializer
     {
